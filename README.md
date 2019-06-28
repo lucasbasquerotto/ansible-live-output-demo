@@ -15,6 +15,8 @@ The playbook includes the role `long_run` that executes the task asynchronously 
 
 To make it easier to run the playbook, it was created a docker compose file to allow running the playbook inside a docker container with Ansible 2.8 installed (the image is already provided, you can simply run the commands below).
 
+(You need to have `docker` and `docker-compose` installed to run it with docker, but if you have Ansible 2.8 you should be able to run the step 2 directly, maybe needing to fix some permisson issues or change the directories paths in `main.yml` to avoid such issues).
+
 ### 1. In this repository, start the docker container with ansible installed
 
 ```bash
