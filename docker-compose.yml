@@ -1,0 +1,12 @@
+version: '3.4'
+
+services:
+  
+  ansible:
+    image: lucasbasquerotto/ansible:0.0.2
+    volumes:
+    - .:/main:ro
+    working_dir: /main
+    logging:
+      options:
+        max-size: 50m

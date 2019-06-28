@@ -1,0 +1,8 @@
+long_run_title: "long run task"
+long_run_become: no
+long_run_output_path: '/var/log/main'
+long_run_output_file: 'output.log'
+long_run_path: '/bin'
+long_run_cmd: 'echo "no command"'
+long_run_timeout: 3600
+long_run_poll: 5

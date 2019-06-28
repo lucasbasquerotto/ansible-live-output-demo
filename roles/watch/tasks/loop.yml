@@ -1,0 +1,37 @@
+---
+  
+- name: '[{{ watch_title }}] - checking {{ watch_job }} status'
+  become: "{{ watch_become }}"
+  async_status:
+    jid: '{{ job.ansible_job_id }}'
+  register: 'watch_status'
+  vars:
+    job: '{{ lookup("vars", watch_job) }}'
+  when: 'job.ansible_job_id is defined'
+  changed_when: false
+
+- name: '[{{ watch_title }}] - tail -n +{{ watch_lines }} {{ watch_file }}'
+  become: "{{ watch_become }}"
+  shell: 'tail -n +{{ watch_lines }} {{ watch_file }}'
+  register: 'watch_tail'
+  failed_when: false
+  changed_when: false
+
+- set_fact:
+    watch_output: '{{ watch_tail.stdout_lines | default([]) }}'
+      
+- set_fact:
+    watch_output_lines: '{{ watch_output | length | int }}'
+  
+- block:
+ 
+  - name: '[{{ watch_title }}] - {{ watch_output_lines }} lines captured'
+    set_fact:
+      watch_lines: '{{ watch_lines|int + watch_output_lines|int }}'
+
+  - name: '[{{ watch_title }}] - {{ watch_file }} - {{ watch_output_lines }} lines captured'
+    debug:
+      var: watch_output
+    tags: ["print_action"]
+    
+  when: (watch_output_lines | int) > 0

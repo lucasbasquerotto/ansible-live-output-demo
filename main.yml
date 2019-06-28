@@ -1,0 +1,33 @@
+- name: Play 01 - Execute the long running task and display output in real-time
+  hosts: main
+  tasks:
+  - file:
+      path: "/somedir"
+      state: directory
+    tags: [print_action]
+
+  - file:
+      path: "/tmp/somedir"
+      state: directory
+    tags: [print_action]
+
+  - copy:
+      src: files/task.sh
+      dest: /somedir/task
+      mode: u=+x
+    tags: [print_action]
+
+  - include_role: 
+      name: long_run
+    vars:
+      long_run_title: "my custom task"
+      long_run_output_path: "/tmp/somedir"
+      long_run_output_file: "task.log"
+      long_run_path: "/somedir"
+      long_run_cmd: "./task"
+      long_run_timeout: 600
+      long_run_poll: 1
+
+  - debug:
+      msg: "Play ended"
+    tags: [print_action]

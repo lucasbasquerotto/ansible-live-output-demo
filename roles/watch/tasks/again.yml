@@ -1,0 +1,12 @@
+---
+
+- name: '[{{ watch_title }}] - initialize watch_count'
+  set_fact:
+    watch_count: 0
+
+- name: '[{{ watch_title }}] - checking {{ watch_job }} status until finished'
+  include_tasks: 'recursive.yml'
+
+- name: '[{{ watch_title }}] - watch_status is finished'
+  assert:
+    that: watch_status.finished

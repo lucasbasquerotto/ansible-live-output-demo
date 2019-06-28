@@ -1,0 +1,49 @@
+- set_fact:
+    long_run_before: "{{ lookup('pipe', 'date \"+%Y-%m-%d %H:%M:%S\"') }}"
+
+- name: '[{{ long_run_title }}] - create the directory "{{ long_run_output_path }}" to run'
+  become: "{{ long_run_become }}"
+  file:
+    path: "{{ long_run_output_path }}"
+    state: directory
+    mode: 0744
+
+- name: '[{{ long_run_title }}] - clear output file before run'
+  become: "{{ long_run_become }}"
+  copy: 
+    content: ""
+    dest: "{{ long_run_output_path }}/{{ long_run_output_file }}"
+    mode: 0600
+
+- name: '[{{ long_run_title }}] - start the execution of "{{ long_run_cmd }}"'
+  become: "{{ long_run_become }}"
+  shell: |
+    set -o pipefail
+    {{ long_run_cmd }} 2>&1 | tee --append {{ long_run_output_path }}/{{ long_run_output_file }}
+  args:
+    executable: /bin/bash
+    chdir: "{{ long_run_path }}"
+  async: "{{ long_run_timeout | int }}"
+  poll: 0
+  register: 'long_run_register'
+
+- name: '[{{ long_run_title }}] - Watch "{{ long_run_output_path }}/output.log" until finishes'
+  include_role:
+    name: 'watch'
+  vars:
+    watch_title: "{{ long_run_title }}"
+    watch_become: "{{ long_run_become }}"
+    watch_file: '{{ long_run_output_path }}/{{ long_run_output_file }}'
+    watch_job: 'long_run_register'
+    watch_timeout: "{{ long_run_timeout | int }}"
+    watch_poll: "{{ long_run_poll | int }}"
+
+- name: '[{{ long_run_title }}]'
+  debug: 
+    msg: "before: {{ long_run_before }}"
+  tags: ["print_action"]
+
+- name: '[{{ long_run_title }}]'
+  debug: 
+    msg: "after: {{ lookup('pipe', 'date \"+%Y-%m-%d %H:%M:%S\"') }}"
+  tags: ["print_action"]

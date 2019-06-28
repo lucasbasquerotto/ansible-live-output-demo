@@ -1,0 +1,30 @@
+---
+
+- name: '[{{ watch_title }}] - checking {{ watch_job }} status (recursive)'
+  include_tasks: 'loop.yml'
+
+- name: '[{{ watch_title }}] - set watch_finished'
+  set_fact:
+    watch_finished: "{{ watch_status.finished | bool }}"
+
+- name: '[{{ watch_title }}] - count ({{ watch_count | int + 1 }})'
+  set_fact:
+    watch_count: '{{ watch_count | int + 1 }}'
+
+- name: '[{{ watch_title }}] - retries ({{ (watch_timeout | int / watch_poll | int) | int }})'
+  set_fact:
+    watch_retries: '{{ (watch_timeout | int / watch_poll | int) | int }}'
+
+- name: '[{{ watch_title }}] - timeout ({{ watch_timeout }} seconds)'
+  fail: 
+    msg: "Timeout of {{ watch_timeout }} seconds exceeded ({{ watch_retries }} retries)"
+  when: (not watch_finished) and (watch_count | int > watch_retries | int)
+
+- name: '[{{ watch_title }}] - wait for {{ watch_poll }} seconds'
+  wait_for:
+    timeout: '{{ watch_poll | int }}'
+  when: not watch_finished
+
+- name: '[{{ watch_title }}] - call itself recursively'
+  include_tasks: 'recursive.yml'
+  when: not watch_finished
