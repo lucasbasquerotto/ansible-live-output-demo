@@ -26,6 +26,9 @@ docker-compose run --rm ansible /bin/bash
 ```bash
 ansible-playbook main.yml
 ```
+## Screenshot of the output
+
+![ansible output image](https://raw.githubusercontent.com/lucasbasquerotto/my-projects/master/images/ansible-output.png)
 
 ## Tips:
 
