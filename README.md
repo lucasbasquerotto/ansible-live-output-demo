@@ -41,3 +41,5 @@ ansible-playbook main.yml
 3) Remove the strings in the array of `files/task.sh` to see a case in which there is no output from the task.
 
 4) Change the file `ansible.cfg` commenting the lines `display_ok_hosts` and `stdout_callback` to see that many unnecessary stuff is displayed. It can be much worse for tasks that may take a considerable amount of time with a small output (that's the main reason for using the custom callback plugin).
+
+5) To make it work in other projects, include the roles `long_run` and `watch` as well as the callback plugin, and enable the plugin in the `ansible.cfg` file, defining also `display_ok_hosts = no` and `display_skipped_hosts = no`. Keep in mind that the tasks in the project that ends with the `ok` status will not be shown, but you can make they show including a tag `print_action` in the task. You can use this repository as a reference.
